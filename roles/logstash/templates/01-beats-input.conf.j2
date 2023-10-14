@@ -1,0 +1,11 @@
+input {
+  beats {
+    port => {{ logstash_listen_port_beats }}
+  }
+  udp {
+    #host => "localhost"
+    port => 10514
+    codec => "json"
+    type => "rsyslog"
+  }
+}

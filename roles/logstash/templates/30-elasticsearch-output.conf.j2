@@ -1,0 +1,9 @@
+output {
+  elasticsearch {
+    hosts => {{ logstash_elasticsearch_hosts | to_json }}
+    index => "rsyslog-%{+YYYY.MM.dd}"
+    user => "logstash"
+    password => "nfdje44FuaneYF"
+  }
+}
+

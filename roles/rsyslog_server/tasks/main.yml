@@ -1,0 +1,56 @@
+---
+# tasks file for rsyslog
+- name: Uninstall conflicting systemd-logger
+  ansible.builtin.package:
+    name: systemd-logger
+    state: absent
+
+- name: Install rsyslog
+  ansible.builtin.package:
+    name: rsyslog
+    state: present
+
+- name: Configuring default rsyslog
+  ansible.builtin.template:
+    src: rsyslog.conf.j2
+    dest: /etc/rsyslog.conf
+    mode: "0644"
+  notify:
+    - Restart rsyslog
+
+- name: Make configuration directory
+  ansible.builtin.file:
+    name: /etc/rsyslog.d/
+    state: directory
+    mode: "0755"
+
+- name: Configuring rsyslog default.conf
+  ansible.builtin.template:
+    src: 50-default.conf.j2
+    dest: /etc/rsyslog.d/50-default.conf
+    mode: "0644"
+  notify:
+    - Restart rsyslog
+
+- name: Configure shipping to logstash .conf
+  ansible.builtin.template:
+    src: 60-output.conf.j2
+    dest: /etc/rsyslog.d/60-output.conf
+    mode: "0644"
+  notify:
+    - Restart rsyslog
+
+- name: Configure json template rsyslof .conf
+  ansible.builtin.template:
+    src: 01-json-template.conf.j2
+    dest: /etc/rsyslog.d/01-json-template.conf
+    mode: "0644"
+  notify:
+    - Restart rsyslog
+
+
+- name: Start and enable rsyslog
+  ansible.builtin.service:
+    name: rsyslog
+    state: started
+    enabled: yes

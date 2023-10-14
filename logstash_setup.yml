@@ -1,0 +1,30 @@
+---
+
+- name: Setup logstash server
+  hosts: all
+  become: true
+
+  pre_tasks:
+    - name: Use Java 8 on Ubuntu.
+      set_fact:
+        java_packages:
+          - openjdk-8-jdk
+    - name: Logstash pre-config.
+      set_fact:
+        logstash_monitor_local_syslog: false
+
+  tasks:
+  - name: Genarate uniq ID
+    ansible.builtin.copy:
+      dest: "./settings.ini"
+      content: |
+        [general]
+        uniqueID={{ ansible_hostname }}
+
+  roles:
+    - role: roles/apt
+    - role: roles/ntp
+    - role: geerlingguy.java
+    - role: roles/logstash
+    - role: roles/elasticsearch
+    - role: roles/rsyslog_server
